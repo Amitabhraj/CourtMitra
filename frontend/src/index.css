@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: #f8f2e8;
+  color: #292524;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes law-float-a {
+
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(12px, -8px, 0);
+  }
+}
+
+@keyframes law-float-b {
+
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(-14px, 10px, 0);
+  }
+}
+
+.law-enter-up {
+  opacity: 0;
+  animation: fade-up 560ms ease-out forwards;
+}
+
+.law-float-a {
+  animation: law-float-a 18s ease-in-out infinite;
+}
+
+.law-float-b {
+  animation: law-float-b 20s ease-in-out infinite;
+}
+
+.animation-delay-150 {
+  animation-delay: 150ms;
+}
+
+.law-panel {
+  background-image: linear-gradient(135deg,
+      rgba(255, 247, 237, 0.9),
+      rgba(254, 243, 199, 0.55) 35%,
+      rgba(255, 251, 235, 0.9));
+}
+
+.law-card {
+  backdrop-filter: blur(6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .law-enter-up,
+  .law-float-a,
+  .law-float-b {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
