@@ -68,15 +68,37 @@ const Login = () => {
       if (data?.access) {
         localStorage.setItem("access", data.access);
       }
+      if (data?.refresh) {
+        localStorage.setItem("refresh", data.refresh);
+      }
+      if (data?.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        if (data.user.role) {
+          localStorage.setItem("role", data.user.role.toUpperCase());
+        }
+      }
+
+      // Dispatch custom storage event so Navbar updates immediately in the same window
+      window.dispatchEvent(new Event("storage"));
+
+      const userRole = (data?.user?.role || "").toUpperCase();
+      let targetDashboard = "/dashboard";
+      if (userRole === "LAWYER") {
+        targetDashboard = "/lawyer_dash";
+      } else if (userRole === "STUDENT") {
+        targetDashboard = "/student_dash";
+      } else if (userRole === "CLIENT") {
+        targetDashboard = "/user_dash";
+      }
 
       setFeedback({
         type: "success",
-        message: data?.message || "Login successful. Redirecting...",
+        message: data?.message || `Login successful as ${userRole || "user"}. Redirecting to your dashboard...`,
       });
 
       setTimeout(() => {
-        navigate("/");
-      }, 900);
+        navigate(targetDashboard);
+      }, 700);
     } catch (error) {
       setFeedback({
         type: "error",

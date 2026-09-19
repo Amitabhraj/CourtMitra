@@ -79,20 +79,48 @@ export const lawChatHandler: RequestHandler = expressAsyncHandler(
             typeof item.content === "number") &&
           String(item.content).trim().length > 0,
       )
-      .slice(-1)
+      .slice(-6)
       .map((item) => ({
         role: item.role as "user" | "assistant",
         content: String(item.content),
       }));
 
-    const agentResponse = await lawAgent.invoke({
-      messages: [...historyMessages, { role: "user", content: currentMessage }],
-    });
+    try {
+      const agentResponse = await lawAgent.invoke({
+        messages: [...historyMessages, { role: "user", content: currentMessage }],
+      });
 
-    const agentReply =
-      agentResponse.messages[agentResponse.messages.length - 1]?.content;
+      const allMessages = agentResponse.messages;
+      const lastMessage = allMessages[allMessages.length - 1];
+      let agentReply = lastMessage?.content ? String(lastMessage.content) : "";
 
-    res.json({ response: agentReply });
+      // If a drafting tool produced an HTML document, ensure it is included
+      for (const msg of allMessages) {
+        const role = (msg as any).role || (msg as any)._getType?.();
+        if (role === "tool" || msg.constructor.name === "ToolMessage") {
+          const toolContent =
+            typeof msg.content === "string" ? msg.content.trim() : "";
+          if (
+            (toolContent.includes("<!DOCTYPE") ||
+              toolContent.includes("<html") ||
+              toolContent.includes("<style>")) &&
+            !agentReply.includes(toolContent)
+          ) {
+            agentReply = agentReply
+              ? `${agentReply}\n\n${toolContent}`
+              : toolContent;
+          }
+        }
+      }
+
+      res.json({ response: agentReply || "No response available." });
+    } catch (agentError) {
+      console.error("lawAgent invoke failed:", agentError);
+      res.status(500).json({
+        error: "Failed to process chat message with AI agent.",
+        details: (agentError as Error).message,
+      });
+    }
   },
 );
 

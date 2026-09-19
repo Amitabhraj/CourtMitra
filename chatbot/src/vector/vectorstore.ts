@@ -1,27 +1,87 @@
+import "dotenv/config";
 import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/huggingface_transformers";
 import { Document } from "@langchain/core/documents";
 import { QdrantVectorStore } from "@langchain/qdrant";
+import { QdrantClient } from "@qdrant/js-client-rest";
 import type { LoadedPdfDocuments } from "../utils/pdfLoader";
 
-const embeddingModel = new HuggingFaceTransformersEmbeddings({
-  model: process.env.EMBEDDING_MODEL ?? "Xenova/all-MiniLM-L6-v2",
-});
+const CASE_COLLECTION_NAME = process.env.QDRANT_CASE_COLLECTION ?? "shivalik-law-casefiles";
+const LAW_COLLECTION_NAME = process.env.QDRANT_LAW_COLLECTION ?? "shivalik-law-laws";
+const VECTOR_SIZE = 384;
 
-const vectorStoreCase = QdrantVectorStore.fromExistingCollection(
-  embeddingModel,
-  {
-    url: process.env.QDRANT_URL || "http://localhost:6333",
-    collectionName: "shivalik-law-casefiles",
-  },
-);
+let embeddingModelInstance: HuggingFaceTransformersEmbeddings | null = null;
 
-const vectorStoreLaws = QdrantVectorStore.fromExistingCollection(
-  embeddingModel,
-  {
-    url: process.env.QDRANT_URL || "http://localhost:6333",
-    collectionName: "shivalik-law-laws",
-  },
-);
+export const getEmbeddingModel = (): HuggingFaceTransformersEmbeddings => {
+  if (!embeddingModelInstance) {
+    embeddingModelInstance = new HuggingFaceTransformersEmbeddings({
+      model: process.env.EMBEDDING_MODEL ?? "Xenova/all-MiniLM-L6-v2",
+    });
+  }
+  return embeddingModelInstance;
+};
+
+let qdrantClientInstance: QdrantClient | null = null;
+
+export const getQdrantClient = (): QdrantClient => {
+  if (!qdrantClientInstance) {
+    const clientParams = {
+      url: process.env.QDRANT_URL || "http://localhost:6333",
+      checkCompatibility: false,
+      ...(process.env.QDRANT_API_KEY ? { apiKey: process.env.QDRANT_API_KEY } : {}),
+    };
+    qdrantClientInstance = new QdrantClient(clientParams);
+  }
+  return qdrantClientInstance;
+};
+
+const ensureCollectionExists = async (collectionName: string): Promise<void> => {
+  try {
+    const client = getQdrantClient();
+    const result = await client.collectionExists(collectionName);
+    if (!result.exists) {
+      console.log(`Creating Qdrant collection: ${collectionName}`);
+      await client.createCollection(collectionName, {
+        vectors: {
+          size: VECTOR_SIZE,
+          distance: "Cosine",
+        },
+      });
+    }
+  } catch (error) {
+    console.warn(`Could not verify/create collection "${collectionName}":`, (error as Error).message);
+  }
+};
+
+let caseVectorStorePromise: Promise<QdrantVectorStore> | null = null;
+let lawVectorStorePromise: Promise<QdrantVectorStore> | null = null;
+
+export const getCaseVectorStore = async (): Promise<QdrantVectorStore> => {
+  if (!caseVectorStorePromise) {
+    caseVectorStorePromise = (async () => {
+      await ensureCollectionExists(CASE_COLLECTION_NAME);
+      return QdrantVectorStore.fromExistingCollection(getEmbeddingModel(), {
+        url: process.env.QDRANT_URL || "http://localhost:6333",
+        collectionName: CASE_COLLECTION_NAME,
+        ...(process.env.QDRANT_API_KEY ? { apiKey: process.env.QDRANT_API_KEY } : {}),
+      });
+    })();
+  }
+  return caseVectorStorePromise;
+};
+
+export const getLawVectorStore = async (): Promise<QdrantVectorStore> => {
+  if (!lawVectorStorePromise) {
+    lawVectorStorePromise = (async () => {
+      await ensureCollectionExists(LAW_COLLECTION_NAME);
+      return QdrantVectorStore.fromExistingCollection(getEmbeddingModel(), {
+        url: process.env.QDRANT_URL || "http://localhost:6333",
+        collectionName: LAW_COLLECTION_NAME,
+        ...(process.env.QDRANT_API_KEY ? { apiKey: process.env.QDRANT_API_KEY } : {}),
+      });
+    })();
+  }
+  return lawVectorStorePromise;
+};
 
 type IngestionOptions = {
   embeddingBatchSize?: number | undefined;
@@ -141,38 +201,52 @@ export const ingestCaseDirectory = async (
   documents: AsyncGenerator<LoadedPdfDocuments>,
   options: IngestionOptions = {},
 ): Promise<IngestionStats> => {
-  return chunkAndEmbed(vectorStoreCase, documents, options);
+  return chunkAndEmbed(getCaseVectorStore(), documents, options);
 };
 
 export const ingestLawDirectory = async (
   documents: AsyncGenerator<LoadedPdfDocuments>,
   options: IngestionOptions = {},
 ): Promise<IngestionStats> => {
-  return chunkAndEmbed(vectorStoreLaws, documents, options);
+  return chunkAndEmbed(getLawVectorStore(), documents, options);
 };
 
 export const ingestCaseDocuments = async (documents: Document[]) => {
-  await (await vectorStoreCase).addDocuments(documents);
+  const store = await getCaseVectorStore();
+  await store.addDocuments(documents);
 };
 
-export const searchCaseDocuments = async (query: string) => {
-  const topK = sanitizeInt(
-    Number.parseInt(process.env.SEARCH_TOP_K ?? "3", 10),
-    3,
-  );
-  const results = await (await vectorStoreCase).similaritySearch(query, topK);
-  return results;
+export const searchCaseDocuments = async (query: string): Promise<Document[]> => {
+  try {
+    const topK = sanitizeInt(
+      Number.parseInt(process.env.SEARCH_TOP_K ?? "3", 10),
+      3,
+    );
+    const store = await getCaseVectorStore();
+    const results = await store.similaritySearch(query, topK);
+    return results;
+  } catch (error) {
+    console.warn("searchCaseDocuments fallback (vector DB unavailable or empty):", (error as Error).message);
+    return [];
+  }
 };
 
 export const ingestLawDocuments = async (documents: Document[]) => {
-  await (await vectorStoreLaws).addDocuments(documents);
+  const store = await getLawVectorStore();
+  await store.addDocuments(documents);
 };
 
-export const searchLawDocuments = async (query: string) => {
-  const topK = sanitizeInt(
-    Number.parseInt(process.env.SEARCH_TOP_K ?? "3", 10),
-    3,
-  );
-  const results = await (await vectorStoreLaws).similaritySearch(query, topK);
-  return results;
+export const searchLawDocuments = async (query: string): Promise<Document[]> => {
+  try {
+    const topK = sanitizeInt(
+      Number.parseInt(process.env.SEARCH_TOP_K ?? "3", 10),
+      3,
+    );
+    const store = await getLawVectorStore();
+    const results = await store.similaritySearch(query, topK);
+    return results;
+  } catch (error) {
+    console.warn("searchLawDocuments fallback (vector DB unavailable or empty):", (error as Error).message);
+    return [];
+  }
 };

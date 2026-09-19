@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowRight, Scale, ShieldCheck } from "lucide-react";
+import { ArrowRight, LayoutDashboard, LogOut, Scale, ShieldCheck } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import LawyerProfilePanel from "../components/profile/LawyerProfilePanel";
 import StudentProfilePanel from "../components/profile/StudentProfilePanel";
@@ -15,6 +15,15 @@ const Profile = () => {
   const apiBase = import.meta.env.VITE_API_BASE_URL
     ? import.meta.env.VITE_API_BASE_URL.replace(/\/$/, "")
     : "";
+
+  const handleLogout = () => {
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    localStorage.removeItem("user");
+    localStorage.removeItem("role");
+    window.dispatchEvent(new Event("storage"));
+    navigate("/login");
+  };
 
   const fetchUserDetail = useCallback(async () => {
     if (!accessToken) {
@@ -85,16 +94,28 @@ const Profile = () => {
             </p>
           </div>
 
-          <Link
-            to={dashboardPath}
-            className="group inline-flex items-center gap-2 rounded-2xl bg-linear-to-r from-amber-400 to-orange-500 px-5 py-3 text-sm font-semibold text-amber-50 shadow-[0_12px_24px_rgba(217,119,6,0.26)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_28px_rgba(217,119,6,0.32)]"
-          >
-            Go to Dashboard
-            <ArrowRight
-              size={16}
-              className="transition-transform duration-300 group-hover:translate-x-0.5"
-            />
-          </Link>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              to={dashboardPath}
+              className="group inline-flex items-center gap-2 rounded-2xl bg-linear-to-r from-amber-400 to-orange-500 px-5 py-3 text-sm font-semibold text-amber-50 shadow-[0_12px_24px_rgba(217,119,6,0.26)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_28px_rgba(217,119,6,0.32)]"
+            >
+              <LayoutDashboard size={16} />
+              Go to Dashboard
+              <ArrowRight
+                size={16}
+                className="transition-transform duration-300 group-hover:translate-x-0.5"
+              />
+            </Link>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="inline-flex items-center gap-2 rounded-2xl border border-rose-200/80 bg-rose-50/90 px-5 py-3 text-sm font-semibold text-rose-700 shadow-sm transition-all duration-300 hover:border-rose-300 hover:bg-rose-100 hover:text-rose-900 cursor-pointer"
+            >
+              <LogOut size={16} />
+              Logout
+            </button>
+          </div>
         </div>
 
         {isLoading && (

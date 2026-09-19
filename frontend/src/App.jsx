@@ -8,6 +8,7 @@ import Profile from "./pages/Profile";
 import LawyerDashboard from "./pages/LawyerDashboard";
 import StudentDashboard from "./pages/StudentDashboard";
 import UserDashboard from "./pages/UserDashboard";
+import Dashboard from "./pages/Dashboard";
 import FindLawyer from "./pages/FindLawyer";
 import Internships from "./pages/Internships";
 import About from "./pages/About";
@@ -21,6 +22,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/lawbot" element={<Lawbot />} />
         <Route path="/find-lawyer" element={<FindLawyer />} />
         <Route path="/internships" element={<Internships />} />
@@ -29,6 +31,7 @@ const App = () => {
         <Route path="/lawyer_dash" element={<LawyerDashboard />} />
         <Route path="/student_dash" element={<StudentDashboard />} />
         <Route path="/user_dash" element={<UserDashboard />} />
+        <Route path="/client_dash" element={<UserDashboard />} />
         {/* Add more routes as needed */}
       </Routes>
     </Router>

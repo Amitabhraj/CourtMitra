@@ -1,6 +1,7 @@
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import type { Document } from "@langchain/core/documents";
 import { readdir } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -17,6 +18,9 @@ export type LoadedPdfDocuments = {
 };
 
 const listPdfFiles = async (rootDir: string): Promise<string[]> => {
+  if (!existsSync(rootDir)) {
+    return [];
+  }
   const entries = await readdir(rootDir, { withFileTypes: true });
   const nested = await Promise.all(
     entries.map(async (entry) => {

@@ -51,7 +51,7 @@ class LawyerProfile(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
 
-    working_days = models.JSONField(default=list)
+    working_days = models.CharField(default=list,null=True, max_length=255)  # Store as a comma-separated string
 
     working_place = models.CharField(max_length=255, blank=True, null=True)
 

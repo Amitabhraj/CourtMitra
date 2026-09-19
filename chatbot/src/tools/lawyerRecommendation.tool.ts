@@ -140,7 +140,9 @@ const fetchLawyers = async (): Promise<LawyerApiRecord[]> => {
   const rawBaseUrl =
     process.env.LEGAL_BACKEND_BASE_URL ?? process.env.BACKEND_BASE_URL;
   const baseUrl = (rawBaseUrl ?? "http://127.0.0.1:8000").replace(/\/$/, "");
-  const response = await fetch(`${baseUrl}/api/law/lawyers/`);
+  const response = await fetch(`${baseUrl}/api/law/lawyers/`, {
+    signal: AbortSignal.timeout(4000),
+  });
 
   if (!response.ok) {
     throw new Error(
@@ -163,7 +165,23 @@ export const recommendLawyer = async ({
   query: string;
   topK: number;
 }) => {
-  const lawyers = (await fetchLawyers()).filter((lawyer) => {
+  let allLawyers: LawyerApiRecord[] = [];
+  try {
+    allLawyers = await fetchLawyers();
+  } catch (error) {
+    console.warn("fetchLawyers warning:", (error as Error).message);
+    return JSON.stringify(
+      {
+        query,
+        message: "Lawyer data is currently unavailable from the backend service.",
+        recommendations: [],
+      },
+      null,
+      2,
+    );
+  }
+
+  const lawyers = allLawyers.filter((lawyer) => {
     const isActive = (lawyer.status ?? "").toUpperCase() === "ACTIVE";
     const hasName = Boolean(lawyer.user?.username?.trim());
     const hasMobile = Boolean(lawyer.mobile?.trim());

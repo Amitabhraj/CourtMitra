@@ -3,10 +3,17 @@ import { tool } from "langchain";
 import { searchLawDocuments } from "../vector/vectorstore";
 
 export const retrieveLawDocuments = async ({ query }: { query: string }) => {
-  const results = await searchLawDocuments(query);
-  const formatted = results.map((r: any) => r.pageContent).join("\n\n");
-  console.log(formatted);
-  return formatted;
+  try {
+    const results = await searchLawDocuments(query);
+    if (!results || results.length === 0) {
+      return "No relevant law documents found in the knowledge base.";
+    }
+    const formatted = results.map((r: any) => r.pageContent).filter(Boolean).join("\n\n");
+    return formatted || "No relevant law documents found in the knowledge base.";
+  } catch (error) {
+    console.warn("retrieveLawDocuments error:", (error as Error).message);
+    return "No relevant law documents found in the knowledge base.";
+  }
 };
 
 export const RetrieveLawDocumentsTool = tool(retrieveLawDocuments, {

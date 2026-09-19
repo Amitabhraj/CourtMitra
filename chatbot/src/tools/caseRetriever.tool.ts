@@ -3,10 +3,17 @@ import { tool } from "langchain";
 import { searchCaseDocuments } from "../vector/vectorstore";
 
 export const retrieveCaseFiles = async ({ query }: { query: string }) => {
-  const results = await searchCaseDocuments(query);
-  const formatted = results.map((r: any) => r.pageContent).join("\n\n");
-  console.log(formatted);
-  return formatted;
+  try {
+    const results = await searchCaseDocuments(query);
+    if (!results || results.length === 0) {
+      return "No relevant case files found in the knowledge base.";
+    }
+    const formatted = results.map((r: any) => r.pageContent).filter(Boolean).join("\n\n");
+    return formatted || "No relevant case files found in the knowledge base.";
+  } catch (error) {
+    console.warn("retrieveCaseFiles error:", (error as Error).message);
+    return "No relevant case files found in the knowledge base.";
+  }
 };
 
 export const RetrieveCaseFilesTool = tool(retrieveCaseFiles, {

@@ -7,16 +7,19 @@ import {
   Scale,
   ArrowUpRight,
   CircleUserRound,
+  LayoutDashboard,
 } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [hasAccessToken, setHasAccessToken] = useState(false);
+  const [userRole, setUserRole] = useState(localStorage.getItem("role") || "");
 
   useEffect(() => {
     const syncAuthState = () => {
       setHasAccessToken(Boolean(localStorage.getItem("access")));
+      setUserRole(localStorage.getItem("role") || "");
     };
 
     syncAuthState();
@@ -91,13 +94,27 @@ export default function Navbar() {
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
             {hasAccessToken ? (
-              <Link
-                to="/profile"
-                className="group inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-amber-400 to-orange-500 px-5 py-2.5 text-sm font-semibold text-amber-50 shadow-[0_10px_22px_rgba(217,119,6,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(217,119,6,0.35)]"
-              >
-                <CircleUserRound size={16} />
-                Profile
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/dashboard"
+                  className="group inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-amber-400 to-orange-500 px-4 py-2.5 text-sm font-semibold text-amber-50 shadow-[0_10px_22px_rgba(217,119,6,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(217,119,6,0.35)]"
+                >
+                  <LayoutDashboard size={16} />
+                  <span>Dashboard</span>
+                  {userRole && (
+                    <span className="rounded-md bg-amber-950/20 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-950">
+                      {userRole}
+                    </span>
+                  )}
+                </Link>
+                <Link
+                  to="/profile"
+                  className="group inline-flex items-center gap-2 rounded-xl border border-amber-200/70 bg-amber-50/85 px-4 py-2.5 text-sm font-semibold text-stone-700 transition-all duration-300 hover:border-amber-300 hover:bg-amber-100/70 hover:text-stone-900"
+                >
+                  <CircleUserRound size={16} />
+                  Profile
+                </Link>
+              </div>
             ) : (
               <>
                 <Link
@@ -165,14 +182,24 @@ export default function Navbar() {
             ))}
             <div className="grid grid-cols-2 gap-2 pt-2">
               {hasAccessToken ? (
-                <Link
-                  to="/profile"
-                  onClick={() => setIsOpen(false)}
-                  className="col-span-2 flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-amber-400 to-orange-500 px-4 py-2.5 text-center text-sm font-semibold text-amber-50"
-                >
-                  <CircleUserRound size={15} />
-                  Profile
-                </Link>
+                <>
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-amber-400 to-orange-500 px-4 py-2.5 text-center text-sm font-semibold text-amber-50"
+                  >
+                    <LayoutDashboard size={15} />
+                    Dashboard {userRole ? `(${userRole})` : ""}
+                  </Link>
+                  <Link
+                    to="/profile"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-xl border border-amber-200/80 bg-amber-50/90 px-4 py-2.5 text-center text-sm font-semibold text-stone-700 hover:bg-amber-100"
+                  >
+                    <CircleUserRound size={15} />
+                    Profile
+                  </Link>
+                </>
               ) : (
                 <>
                   <Link

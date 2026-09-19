@@ -45,7 +45,7 @@ export async function sendLawbotMessage(message, history = []) {
         },
         body: JSON.stringify({
           message,
-          history: history.slice(-1),
+          history: history.slice(-6),
         }),
       });
 
@@ -54,9 +54,11 @@ export async function sendLawbotMessage(message, history = []) {
         return {
           response: data.response || "No response available.",
         };
+      } else {
+        console.warn(`LawBot API error: ${res.status} ${res.statusText}`);
       }
-    } catch (_error) {
-      // Falls back to dummy response when backend is unavailable.
+    } catch (error) {
+      console.warn("LawBot service unreachable, using offline fallback response:", error);
     }
   }
 
