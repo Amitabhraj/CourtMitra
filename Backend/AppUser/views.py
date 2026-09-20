@@ -5,7 +5,9 @@ from rest_framework.response import Response
 from AppUser.user_serializer import UserDetailSerializer, UserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-from AppLawyer.models import Specialization
+from AppLawyer.models import Specialization, LawyerProfile
+from AppStudent.models import StudentProfile
+from AppClient.models import ClientProfile
 from AppLawyer.lawyer_serializer import SpecializationSerializer
 from rest_framework.permissions import AllowAny
 
@@ -24,25 +26,90 @@ class SpecializationListView(generics.ListAPIView):
 class RegisterUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
 
         user = User.objects.get(username=response.data['username'])
         user.set_password(request.data['password'])
+
+        full_name = request.data.get("full_name", "").strip()
+        if full_name:
+            name_parts = full_name.split(" ", 1)
+            user.first_name = name_parts[0]
+            if len(name_parts) > 1:
+                user.last_name = name_parts[1]
+
         user.save()
+
+        # Initialize role-specific profile so all dashboards function immediately
+        role = (user.role or "").upper()
+        try:
+            if role == "CLIENT":
+                ClientProfile.objects.get_or_create(
+                    user=user,
+                    defaults={
+                        "full_name": full_name or user.username,
+                        "phone_number": request.data.get("phone_number", "") or request.data.get("mobile", ""),
+                        "address": request.data.get("address", "") or request.data.get("city", ""),
+                    }
+                )
+            elif role == "LAWYER":
+                profile, _ = LawyerProfile.objects.get_or_create(
+                    user=user,
+                    defaults={
+                        "mobile": request.data.get("phone_number", "0000000000") or request.data.get("mobile", "0000000000"),
+                        "experience_years": int(request.data.get("experience_years") or 0),
+                        "start_time": "09:00:00",
+                        "end_time": "18:00:00",
+                        "working_days": "MON,TUE,WED,THU,FRI",
+                        "working_place": request.data.get("working_place", "") or request.data.get("city", "High Court / District Court"),
+                        "about": request.data.get("about", "") or "Legal advocate practicing across criminal, civil, and corporate litigation.",
+                        "consultation_fee": float(request.data.get("consultation_fee") or 500.00),
+                    }
+                )
+                spec_val = request.data.get("specialization")
+                if spec_val:
+                    if isinstance(spec_val, int) or (isinstance(spec_val, str) and spec_val.isdigit()):
+                        spec_obj = Specialization.objects.filter(id=int(spec_val)).first()
+                    else:
+                        spec_obj = Specialization.objects.filter(name__iexact=str(spec_val).strip()).first()
+                    if spec_obj:
+                        profile.specialization.add(spec_obj)
+            elif role == "STUDENT":
+                StudentProfile.objects.get_or_create(
+                    user=user,
+                    defaults={
+                        "college_name": request.data.get("college_name", "") or "Law School / Faculty of Law",
+                        "course": request.data.get("course", "") or "LL.B",
+                        "year": int(request.data.get("year") or 1),
+                        "skills": request.data.get("skills", "") or "Legal research, case analysis, document drafting",
+                    }
+                )
+        except Exception:
+            pass
+
         refresh = RefreshToken.for_user(user)
 
         return Response({
-            "user": response.data,
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "role": user.role
+            },
             "access": str(refresh.access_token),
             "refresh": str(refresh),
-            "status":200
-        })
+            "message": f"Successfully registered as {user.role}",
+            "status": 200
+        }, status=201)
     
 
     
 class LoginView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")

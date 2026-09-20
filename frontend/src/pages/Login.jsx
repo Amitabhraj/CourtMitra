@@ -10,7 +10,7 @@ import {
   Scale,
   UserRound,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -290,6 +290,18 @@ const Login = () => {
                 By signing in, you access CourtMitra’s legal workspace and
                 role-based tools.
               </p>
+
+              <div className="pt-3 text-center border-t border-amber-200/70">
+                <p className="text-xs text-stone-600 sm:text-sm">
+                  Don't have an account?{" "}
+                  <Link
+                    to="/signup"
+                    className="font-bold text-amber-900 underline underline-offset-4 hover:text-orange-700 transition-colors"
+                  >
+                    Create an account
+                  </Link>
+                </p>
+              </div>
             </form>
           </div>
         </div>

@@ -46,7 +46,7 @@ class LawyerProfile(models.Model):
         ('ACTIVE', 'ACTIVE'),
         ('INACTIVE', 'INACTIVE'),
     ]
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='ACTIVE')
 
     start_time = models.TimeField()
     end_time = models.TimeField()

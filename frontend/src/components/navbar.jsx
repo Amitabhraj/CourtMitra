@@ -331,7 +331,6 @@ export default function Navbar() {
                 </div>
               </div>
             ) : (
-              /* Visitor Login / Sign Up buttons */
               <>
                 <Link
                   to="/login"
@@ -344,7 +343,7 @@ export default function Navbar() {
                   to="/signup"
                   className="group inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-amber-400 to-orange-500 px-5 py-2.5 text-sm font-semibold text-amber-50 shadow-[0_10px_22px_rgba(217,119,6,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(217,119,6,0.35)]"
                 >
-                  Sign Up
+                  Join Now
                   <ArrowUpRight
                     size={15}
                     className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"

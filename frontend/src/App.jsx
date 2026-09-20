@@ -4,6 +4,7 @@ import Navbar from "./components/navbar";
 import Home from "./pages/Home";
 import Lawbot from "./pages/Lawbot";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import LawyerDashboard from "./pages/LawyerDashboard";
 import StudentDashboard from "./pages/StudentDashboard";
@@ -23,6 +24,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/lawbot" element={<Lawbot />} />

@@ -22,7 +22,14 @@ class CreateAppointmentView(generics.CreateAPIView):
         try:
             client = ClientProfile.objects.get(user=self.request.user)
         except ClientProfile.DoesNotExist:
-            raise PermissionDenied("Only clients can book appointments")
+            if getattr(self.request.user, 'role', '') == "CLIENT":
+                client = ClientProfile.objects.create(
+                    user=self.request.user,
+                    full_name=self.request.user.get_full_name() or self.request.user.username,
+                    phone_number=""
+                )
+            else:
+                raise PermissionDenied("Only clients can book appointments")
 
         try:
             with transaction.atomic():
@@ -38,9 +45,13 @@ class ClientAppointmentListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        client = ClientProfile.objects.get(user=self.request.user)
-        return Appointment.objects.filter(client=client)
+        try:
+            client = ClientProfile.objects.get(user=self.request.user)
+            return Appointment.objects.filter(client=client)
+        except ClientProfile.DoesNotExist:
+            return Appointment.objects.none()
     
+
 
 
 
@@ -49,9 +60,13 @@ class LawyerAppointmentListView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        lawyer = LawyerProfile.objects.get(user=self.request.user)
-        return Appointment.objects.filter(lawyer=lawyer)
+        try:
+            lawyer = LawyerProfile.objects.get(user=self.request.user)
+            return Appointment.objects.filter(lawyer=lawyer)
+        except LawyerProfile.DoesNotExist:
+            return Appointment.objects.none()
     
+
 
 
 
@@ -75,6 +90,7 @@ class AvailableSlotsView(APIView):
 
 
 
+
 class UpdateAppointmentView(generics.UpdateAPIView):
     queryset = Appointment.objects.all()
     serializer_class = AppointmentUpdateSerializer
@@ -90,11 +106,11 @@ class UpdateAppointmentView(generics.UpdateAPIView):
 
         appointment = self.get_object()
 
-        # 🔥 Ownership check
+        # Ownership check
         if appointment.client != client:
             raise PermissionDenied("You can only edit your own appointments")
 
-        # 🔥 Prevent double booking
+        # Prevent double booking
         if Appointment.objects.filter(
             lawyer=appointment.lawyer,
             date=serializer.validated_data.get('date', appointment.date),
@@ -149,7 +165,7 @@ class UpdateAppointmentStatusView(generics.UpdateAPIView):
 
         appointment = self.get_object()
 
-        # 🔥 Ownership check
+        # Ownership check
         if appointment.lawyer != lawyer:
             raise PermissionDenied("You can update only your appointments")
 
@@ -169,7 +185,7 @@ class AppointmentDetailView(generics.RetrieveAPIView):
         is_client = False
         is_lawyer = False
 
-        # ✅ Check if client
+        # Check if client
         try:
             client = ClientProfile.objects.get(user=user)
             if appointment.client == client:
@@ -177,7 +193,7 @@ class AppointmentDetailView(generics.RetrieveAPIView):
         except ClientProfile.DoesNotExist:
             pass
 
-        # ✅ Check if lawyer
+        # Check if lawyer
         try:
             lawyer = LawyerProfile.objects.get(user=user)
             if appointment.lawyer == lawyer:
@@ -185,13 +201,8 @@ class AppointmentDetailView(generics.RetrieveAPIView):
         except LawyerProfile.DoesNotExist:
             pass
 
-        # ❌ If neither → block
+        # If neither -> block
         if not (is_client or is_lawyer):
             raise PermissionDenied("You are not allowed to view this appointment")
 
         return appointment
-
-
-
-
-
