@@ -1,0 +1,808 @@
+[
+{
+  "model": "sessions.session",
+  "pk": "6aozldkjmbz0ugsda6lk6r3olny0wi2y",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAUBe_C2hBoafm4dO8ZyAN-pWogKe3KeHdt0oVu38y8l_DY1uy3xoufkzgLLU6_W0B8cNlBuqPcqoy1rMsc5K7IgzZ5rYmfl8P9O8ho-VtPbKPFoIwKbMg54o4ss3YJA8AwygQy1jAFxZPrgJ6CA4290hgdifcH9hM4FQ:1x7oPk:J_KvT4TOAqBne5_O5FZeN-dGEP8rrurNyz8Lt4mWMeU",
+    "expire_date": "2026-10-03T06:19:08.738Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "8irnjjt6cog0zsh6eslpw4rjd3hgjqc8",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAUBe_C2hBoafm4dO8ZyAN-pWogKe3KeHdt0oVu38y8l_DY1uy3xoufkzgLLU6_W0B8cNlBuqPcqoy1rMsc5K7IgzZ5rYmfl8P9O8ho-VtPbKPFoIwKbMg54o4ss3YJA8AwygQy1jAFxZPrgJ6CA4290hgdifcH9hM4FQ:1x89uy:2mKyH2oUw0htNF99Nbv7VXpYl0Y699vW8227xxT_UQw",
+    "expire_date": "2026-10-04T05:16:48.245Z"
+  }
+},
+{
+  "model": "AppLawyer.specialization",
+  "pk": 1,
+  "fields": {
+    "name": "CRIMINAL LAW"
+  }
+},
+{
+  "model": "AppLawyer.specialization",
+  "pk": 2,
+  "fields": {
+    "name": "CIVIL LAW"
+  }
+},
+{
+  "model": "AppLawyer.specialization",
+  "pk": 3,
+  "fields": {
+    "name": "CORPORATE LAW"
+  }
+},
+{
+  "model": "AppLawyer.specialization",
+  "pk": 4,
+  "fields": {
+    "name": "FAMILY LAW"
+  }
+},
+{
+  "model": "AppLawyer.specialization",
+  "pk": 5,
+  "fields": {
+    "name": "INTELLECTUAL PROPERTY LAW"
+  }
+},
+{
+  "model": "AppLawyer.specialization",
+  "pk": 6,
+  "fields": {
+    "name": "LABOR AND EMPLOYMENT LAW"
+  }
+},
+{
+  "model": "AppLawyer.specialization",
+  "pk": 7,
+  "fields": {
+    "name": "TAX LAW"
+  }
+},
+{
+  "model": "AppLawyer.specialization",
+  "pk": 8,
+  "fields": {
+    "name": "ENVIRONMENTAL LAW"
+  }
+},
+{
+  "model": "AppLawyer.specialization",
+  "pk": 9,
+  "fields": {
+    "name": "IMMIGRATION LAW"
+  }
+},
+{
+  "model": "AppLawyer.specialization",
+  "pk": 10,
+  "fields": {
+    "name": "BANKRUPTCY LAW"
+  }
+},
+{
+  "model": "AppLawyer.specialization",
+  "pk": 11,
+  "fields": {
+    "name": "REAL ESTATE LAW"
+  }
+},
+{
+  "model": "AppLawyer.specialization",
+  "pk": 12,
+  "fields": {
+    "name": "CONSTITUTIONAL LAW"
+  }
+},
+{
+  "model": "AppLawyer.specialization",
+  "pk": 13,
+  "fields": {
+    "name": "HUMAN RIGHTS LAW"
+  }
+},
+{
+  "model": "AppLawyer.specialization",
+  "pk": 14,
+  "fields": {
+    "name": "INTERNATIONAL LAW"
+  }
+},
+{
+  "model": "AppUser.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$jl6XF2D0wQpel26wz59DAu$C1ZCYLXrGOYwpjaWp6ZnlvQnoKGAN9d2+L7hb/wm2Pk=",
+    "last_login": "2026-09-20T04:52:22.454Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "admin@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-09-19T06:18:50Z",
+    "role": "STUDENT",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "AppUser.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$gf9p7dYu3mkMgwE0vl6XJ9$N76z5GkwWb+09TxZ071JEHZfFQOMf3JOjJfraI1aQT8=",
+    "last_login": "2026-09-20T04:52:48Z",
+    "is_superuser": false,
+    "username": "Lawyer_1",
+    "first_name": "Lawyer",
+    "last_name": "1",
+    "email": "lawyer1@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-09-20T04:52:34Z",
+    "role": "LAWYER",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "AppUser.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$mrBBYwi6gLJevNYrh4Md0e$zoZwPeDKnr3pJOFoQeboxO3dIKFvR0hCEs2duBEHbWQ=",
+    "last_login": "2026-09-20T06:32:12Z",
+    "is_superuser": false,
+    "username": "client_1",
+    "first_name": "Client",
+    "last_name": "1",
+    "email": "client1@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-09-20T06:31:54Z",
+    "role": "CLIENT",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "AppLawyer.lawyerprofile",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "Lawyer_1"
+    ],
+    "experience_years": 8,
+    "address": "Roorkee",
+    "mobile": "124356890",
+    "status": "ACTIVE",
+    "start_time": "04:53:30",
+    "end_time": "04:53:31",
+    "working_days": "['monday']",
+    "working_place": "Nainital high Court",
+    "about": "",
+    "profile_image": "lawyers/Amitabh_Photograph.jpg",
+    "chat_free": false,
+    "consultation_fee": "8000.00",
+    "created_at": "2026-09-20T04:54:09.592Z",
+    "updated_at": "2026-09-20T06:42:16.580Z",
+    "specialization": [
+      2
+    ]
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2026-09-19T06:29:13.026Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppUser",
+      "user"
+    ],
+    "object_id": "1",
+    "object_repr": "admin",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Role\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2026-09-19T06:29:49.541Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppUser",
+      "user"
+    ],
+    "object_id": "1",
+    "object_repr": "admin",
+    "action_flag": 2,
+    "change_message": "[]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2026-09-19T06:30:00.795Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppUser",
+      "user"
+    ],
+    "object_id": "1",
+    "object_repr": "admin",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Role\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2026-09-19T06:38:19.707Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppUser",
+      "user"
+    ],
+    "object_id": "1",
+    "object_repr": "admin",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Role\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2026-09-19T06:39:54.789Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppUser",
+      "user"
+    ],
+    "object_id": "1",
+    "object_repr": "admin",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Role\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 6,
+  "fields": {
+    "action_time": "2026-09-19T06:40:26.904Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppUser",
+      "user"
+    ],
+    "object_id": "1",
+    "object_repr": "admin",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Role\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 7,
+  "fields": {
+    "action_time": "2026-09-19T06:40:36.747Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppUser",
+      "user"
+    ],
+    "object_id": "1",
+    "object_repr": "admin",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Role\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 8,
+  "fields": {
+    "action_time": "2026-09-19T09:29:44.802Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppUser",
+      "user"
+    ],
+    "object_id": "1",
+    "object_repr": "admin",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Role\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 9,
+  "fields": {
+    "action_time": "2026-09-19T09:30:09.548Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppUser",
+      "user"
+    ],
+    "object_id": "1",
+    "object_repr": "admin",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Role\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 10,
+  "fields": {
+    "action_time": "2026-09-19T09:49:11.104Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppUser",
+      "user"
+    ],
+    "object_id": "1",
+    "object_repr": "admin",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Role\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 11,
+  "fields": {
+    "action_time": "2026-09-19T09:59:10.065Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppUser",
+      "user"
+    ],
+    "object_id": "1",
+    "object_repr": "admin",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Role\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 12,
+  "fields": {
+    "action_time": "2026-09-20T04:53:12.850Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppUser",
+      "user"
+    ],
+    "object_id": "2",
+    "object_repr": "Lawyer_1",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 13,
+  "fields": {
+    "action_time": "2026-09-20T04:54:09.600Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "lawyerprofile"
+    ],
+    "object_id": "1",
+    "object_repr": "Lawyer_1 (Lawyer)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 14,
+  "fields": {
+    "action_time": "2026-09-20T04:54:31.724Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "lawyerprofile"
+    ],
+    "object_id": "1",
+    "object_repr": "Lawyer_1 (Lawyer)",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Experience years\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 15,
+  "fields": {
+    "action_time": "2026-09-20T05:16:48.220Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppUser",
+      "user"
+    ],
+    "object_id": "2",
+    "object_repr": "Lawyer_1",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"password\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 16,
+  "fields": {
+    "action_time": "2026-09-20T05:18:20.309Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "specialization"
+    ],
+    "object_id": "1",
+    "object_repr": "CRIMINAL LAW",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 17,
+  "fields": {
+    "action_time": "2026-09-20T05:18:25.559Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "specialization"
+    ],
+    "object_id": "2",
+    "object_repr": "CIVIL LAW",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 18,
+  "fields": {
+    "action_time": "2026-09-20T05:18:30.460Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "specialization"
+    ],
+    "object_id": "3",
+    "object_repr": "CORPORATE LAW",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 19,
+  "fields": {
+    "action_time": "2026-09-20T05:18:37.831Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "specialization"
+    ],
+    "object_id": "4",
+    "object_repr": "FAMILY LAW",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 20,
+  "fields": {
+    "action_time": "2026-09-20T05:18:42.799Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "specialization"
+    ],
+    "object_id": "5",
+    "object_repr": "INTELLECTUAL PROPERTY LAW",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 21,
+  "fields": {
+    "action_time": "2026-09-20T05:18:50.647Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "specialization"
+    ],
+    "object_id": "6",
+    "object_repr": "LABOR AND EMPLOYMENT LAW",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 22,
+  "fields": {
+    "action_time": "2026-09-20T05:18:58.543Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "specialization"
+    ],
+    "object_id": "7",
+    "object_repr": "TAX LAW",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 23,
+  "fields": {
+    "action_time": "2026-09-20T05:19:04.664Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "specialization"
+    ],
+    "object_id": "8",
+    "object_repr": "ENVIRONMENTAL LAW",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 24,
+  "fields": {
+    "action_time": "2026-09-20T05:19:10.496Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "specialization"
+    ],
+    "object_id": "9",
+    "object_repr": "IMMIGRATION LAW",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 25,
+  "fields": {
+    "action_time": "2026-09-20T05:19:16.585Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "specialization"
+    ],
+    "object_id": "10",
+    "object_repr": "BANKRUPTCY LAW",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 26,
+  "fields": {
+    "action_time": "2026-09-20T05:19:20.462Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "specialization"
+    ],
+    "object_id": "11",
+    "object_repr": "REAL ESTATE LAW",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 27,
+  "fields": {
+    "action_time": "2026-09-20T05:19:24.898Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "specialization"
+    ],
+    "object_id": "12",
+    "object_repr": "CONSTITUTIONAL LAW",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 28,
+  "fields": {
+    "action_time": "2026-09-20T05:19:28.859Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "specialization"
+    ],
+    "object_id": "13",
+    "object_repr": "HUMAN RIGHTS LAW",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 29,
+  "fields": {
+    "action_time": "2026-09-20T05:19:32.030Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "specialization"
+    ],
+    "object_id": "14",
+    "object_repr": "INTERNATIONAL LAW",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 30,
+  "fields": {
+    "action_time": "2026-09-20T05:37:44.082Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "lawyerprofile"
+    ],
+    "object_id": "1",
+    "object_repr": "Lawyer_1 (Lawyer)",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Consultation fee\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 31,
+  "fields": {
+    "action_time": "2026-09-20T05:39:26.888Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "lawyerprofile"
+    ],
+    "object_id": "1",
+    "object_repr": "Lawyer_1 (Lawyer)",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Consultation fee\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 32,
+  "fields": {
+    "action_time": "2026-09-20T06:31:54.895Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppUser",
+      "user"
+    ],
+    "object_id": "3",
+    "object_repr": "client_1",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 33,
+  "fields": {
+    "action_time": "2026-09-20T06:32:13.750Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppUser",
+      "user"
+    ],
+    "object_id": "3",
+    "object_repr": "client_1",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"First name\", \"Last name\", \"Email address\", \"Last login\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 34,
+  "fields": {
+    "action_time": "2026-09-20T06:42:16.580Z",
+    "user": [
+      "admin"
+    ],
+    "content_type": [
+      "AppLawyer",
+      "lawyerprofile"
+    ],
+    "object_id": "1",
+    "object_repr": "Lawyer_1 (Lawyer)",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Working days\"]}}]"
+  }
+}
+]
