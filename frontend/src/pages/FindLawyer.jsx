@@ -543,6 +543,19 @@ const FindLawyer = () => {
                       </span>{" "}
                       {lawyer?.start_time || "--"} - {lawyer?.end_time || "--"}
                     </p>
+
+                    <p>
+                    <span className="font-semibold text-stone-700">
+                      Consultation Fee:
+                    </span>{" "}
+                    {Number(lawyer?.consultation_fee) === 0 ? (
+                      <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700">
+                        FREE
+                      </span>
+                    ) : (
+                      <>₹{lawyer?.consultation_fee}</>
+                    )}
+                  </p>
                   </div>
 
                   <div className="mt-3 flex flex-wrap gap-1.5">

@@ -143,6 +143,10 @@ STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR
 
+
+RAZORPAY_API_KEY = 'rzp_test_TeAeSeVr6v0F7E'
+RAZORPAY_API_SECRET = 'GtJylDuasLToEC3EWEzSb78U'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

@@ -6,14 +6,13 @@ class AppointmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
         fields = '__all__'
-        read_only_fields = ['client']  # 🔥 client auto assign
+        read_only_fields = ['client'] 
 
     def validate(self, data):
         lawyer = data.get('lawyer')
         date = data.get('date')
         time_slot = data.get('time_slot')
 
-        # ❌ Prevent double booking
         if Appointment.objects.filter(
             lawyer=lawyer,
             date=date,

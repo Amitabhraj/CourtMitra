@@ -13,6 +13,8 @@ import FindLawyer from "./pages/FindLawyer";
 import Internships from "./pages/Internships";
 import About from "./pages/About";
 import QuickLinks from "./pages/QuickLinks";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import FindClient from "./pages/FindClient";
 
 const App = () => {
   return (
@@ -25,8 +27,10 @@ const App = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/lawbot" element={<Lawbot />} />
         <Route path="/find-lawyer" element={<FindLawyer />} />
+        <Route path="/find-client" element={<FindClient />} />
         <Route path="/internships" element={<Internships />} />
         <Route path="/about" element={<About />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/quick-links" element={<QuickLinks />} />
         <Route path="/lawyer_dash" element={<LawyerDashboard />} />
         <Route path="/student_dash" element={<StudentDashboard />} />

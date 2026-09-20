@@ -43,6 +43,8 @@ const LawyerProfilePanel = ({
     working_days: [],
     working_place: "",
     about: "",
+    chat_free: false,
+    consultation_fee: "0",
     specialization: [],
     profile_image: null,
   });
@@ -79,6 +81,8 @@ const LawyerProfilePanel = ({
       working_days: normalizeWorkingDays(profile?.working_days),
       working_place: profile?.working_place || "",
       about: profile?.about || "",
+      chat_free: profile?.chat_free || false,
+      consultation_fee: String(profile?.consultation_fee ?? 0),
       specialization: (profile?.specialization || []).map(
         (item) => item.id || item,
       ),
@@ -147,6 +151,8 @@ const LawyerProfilePanel = ({
       payload.append("working_days", JSON.stringify(form.working_days));
       payload.append("working_place", form.working_place || "");
       payload.append("about", form.about || "");
+      payload.append("chat_free", String(form.chat_free));
+      payload.append("consultation_fee", form.consultation_fee);
 
       form.specialization.forEach((id) => {
         payload.append("specialization", String(id));
@@ -349,6 +355,33 @@ const LawyerProfilePanel = ({
             rows={3}
             className="w-full rounded-xl border border-amber-200/80 bg-amber-50/70 px-3 py-2.5 text-sm text-stone-800"
           />
+        </label>
+
+
+        <label className="block sm:col-span-2">
+          <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.14em] text-stone-600">
+            Chat Free
+          </span>
+            <input
+              type="checkbox"
+              checked={form.chat_free}
+              onChange={(event) => updateField("chat_free", event.target.checked)}
+              className="h-4 w-4 rounded border-amber-300 text-amber-600"
+            />
+        </label>
+
+
+        <label className="block sm:col-span-2">
+          <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.14em] text-stone-600">
+            Consultation Fee (in INR , including taxes like GST or corporate Tax)
+          </span>
+            <input
+              type="number"
+              value={form.consultation_fee}
+              onChange={(event) => updateField("consultation_fee", event.target.value)}
+              className="w-full rounded-xl border border-amber-200/80 bg-amber-50/70 px-3 py-2.5 text-sm text-stone-400"
+              required
+            />
         </label>
 
         <div className="sm:col-span-2">

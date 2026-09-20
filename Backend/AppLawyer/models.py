@@ -58,8 +58,12 @@ class LawyerProfile(models.Model):
     about = models.TextField(blank=True, null=True)
     profile_image = models.ImageField(upload_to='lawyers/')
 
+    chat_free = models.BooleanField(default=False)
+    consultation_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,help_text="Fees (including taxes like GST or coorporate Tax) for a consultation session with the lawyer.")
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
 
     def __str__(self):
         return f"{self.user.username} (Lawyer)"
