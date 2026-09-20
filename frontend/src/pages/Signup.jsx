@@ -136,7 +136,7 @@ const Signup = () => {
     homeAddress: "", // maps to address
     startTime: "09:00", // maps to start_time
     endTime: "17:00", // maps to end_time
-    workingDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], // maps to working_days
+    workingDays: [], // maps to working_days
     about: "", // maps to about
     profileImage: null, // maps to profile_image File
     chatFree: true, // default True
@@ -190,6 +190,15 @@ const Signup = () => {
       return { ...prev, workingDays: updatedDays };
     });
   };
+
+  const handleSpecializationToggle = (id) => {
+  setForm((prev) => ({
+    ...prev,
+    specialization: prev.specialization.includes(id)
+      ? prev.specialization.filter((item) => item !== id)
+      : [...prev.specialization, id],
+  }));
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -676,41 +685,40 @@ const Signup = () => {
                   {/* Role Specific Fields: LAWYER */}
                   {selectedRole === "LAWYER" && (
                     <div className="space-y-4 pt-2 border-t border-amber-200/60">
-                      {/* Specialization & Experience */}
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <div>
-                          <label className="block text-xs font-bold text-stone-700">
-                            Primary Practice Area / Specialization
-                          </label>
-                          <select
-                            name="specialization"
-                            value={form.specialization}
-                            onChange={handleChange}
-                            className="mt-1 w-full rounded-xl border border-amber-200/80 bg-white py-2.5 px-3.5 text-xs text-stone-800 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-300/30 sm:text-sm"
-                          >
-                            <option value="">Select Specialization</option>
-                            <option value="1">Criminal Law</option>
-                            <option value="2">Civil Law</option>
-                            <option value="3">Corporate Law</option>
-                            <option value="4">Family & Matrimonial</option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-bold text-stone-700">
-                            Years of Experience
-                          </label>
-                          <input
-                            type="number"
-                            name="experienceYears"
-                            min="0"
-                            max="60"
-                            value={form.experienceYears}
-                            onChange={handleChange}
-                            placeholder="e.g. 5"
-                            className="mt-1 w-full rounded-xl border border-amber-200/80 bg-white py-2.5 px-3.5 text-xs text-stone-800 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-300/30 sm:text-sm"
-                          />
-                        </div>
+                      {/* Specialization Multi-Select */}
+                      <div>
+                        <label className="block text-xs font-bold text-stone-700 mb-1.5">
+                          Primary Practice Areas / Specializations
+                        </label>
+                        {isLoadingSpecializations ? (
+                          <p className="text-xs text-stone-500 italic">
+                            Loading specializations from database...
+                          </p>
+                        ) : specializationOptions.length === 0 ? (
+                          <p className="text-xs text-stone-500 italic">
+                            No specializations available
+                          </p>
+                        ) : (
+                          <div className="flex flex-wrap gap-2">
+                            {specializationOptions.map((item) => {
+                              const isSelected = Array.isArray(form.specialization) && form.specialization.includes(item.id);
+                              return (
+                                <button
+                                  key={item.id}
+                                  type="button"
+                                  onClick={() => handleSpecializationToggle(item.id)}
+                                  className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
+                                    isSelected
+                                      ? "border-amber-500 bg-amber-500 text-white shadow-xs"
+                                      : "border-amber-200 bg-white text-stone-600 hover:border-amber-300"
+                                  }`}
+                                >
+                                  {item.name}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
 
                       {/* Home Address & Working Place */}
@@ -786,7 +794,7 @@ const Signup = () => {
                                 key={day}
                                 type="button"
                                 onClick={() => handleWorkingDaysToggle(day)}
-                                className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all ${
+                                className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
                                   selected
                                     ? "border-amber-500 bg-amber-500 text-white shadow-xs"
                                     : "border-amber-200 bg-white text-stone-600 hover:border-amber-300"
@@ -809,7 +817,7 @@ const Signup = () => {
                           name="profileImage"
                           accept="image/*"
                           onChange={handleChange}
-                          className="mt-1 w-full text-xs text-stone-600 file:mr-4 file:rounded-xl file:border-0 file:bg-amber-100 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-amber-900 hover:file:bg-amber-200"
+                          className="mt-1 w-full text-xs text-stone-600 file:mr-4 file:rounded-xl file:border-0 file:bg-amber-100 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-amber-900 hover:file:bg-amber-200 cursor-pointer"
                         />
                       </div>
 
@@ -827,52 +835,53 @@ const Signup = () => {
                         />
                       </div>
 
+                      {/* Consultation & Chat Settings */}
                       <div className="rounded-xl border border-amber-200/80 bg-amber-100/40 p-3.5 space-y-3">
-                          <p className="text-xs font-bold text-amber-950">
-                            Consultation & Chat Settings
-                          </p>
-  
-                          <div className="grid gap-3 sm:grid-cols-2 items-center">
-                            {/* Consultation Fee Input */}
-                            <div>
-                              <label className="block text-xs font-bold text-stone-700">
-                                Consultation Fee (₹)
-                              </label>
-                              <div className="relative mt-1">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-500">
-                                  ₹
-                                </span>
-                                <input
-                                  type="number"
-                                  name="consultationFee"
-                                  min="0"
-                                  step="0.01"
-                                  value={form.consultationFee}
-                                  onChange={handleChange}
-                                  placeholder="0.00"
-                                  className="w-full rounded-xl border border-amber-200/80 bg-white py-2 pl-7 pr-3 text-xs text-stone-800 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-300/30 sm:text-sm"
-                                />
-                              </div>
-                            </div>
+                        <p className="text-xs font-bold text-amber-950">
+                          Consultation & Chat Settings
+                        </p>
 
-                            <div className="flex items-center justify-between sm:justify-start sm:gap-3 pt-2 sm:pt-4">
-                              <label className="relative inline-flex items-center cursor-pointer">
-                                <input
-                                  type="checkbox"
-                                  name="chatFree"
-                                  checked={form.chatFree}
-                                  onChange={handleChange}
-                                  className="sr-only peer"
-                                />
-                                <div className="w-9 h-5 bg-stone-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600"></div>
-                              </label>
-                              <span className="text-xs font-semibold text-stone-700">
-                                Enable Free Initial Chat
+                        <div className="grid gap-3 sm:grid-cols-2 items-center">
+                          {/* Consultation Fee Input */}
+                          <div>
+                            <label className="block text-xs font-bold text-stone-700">
+                              Consultation Fee (₹)
+                            </label>
+                            <div className="relative mt-1">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-500">
+                                ₹
                               </span>
+                              <input
+                                type="number"
+                                name="consultationFee"
+                                min="0"
+                                step="0.01"
+                                value={form.consultationFee}
+                                onChange={handleChange}
+                                placeholder="0.00"
+                                className="w-full rounded-xl border border-amber-200/80 bg-white py-2 pl-7 pr-3 text-xs text-stone-800 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-300/30 sm:text-sm"
+                              />
                             </div>
                           </div>
-                        </div>   
+
+                          <div className="flex items-center justify-between sm:justify-start sm:gap-3 pt-2 sm:pt-4">
+                            <label className="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                name="chatFree"
+                                checked={form.chatFree}
+                                onChange={handleChange}
+                                className="sr-only peer"
+                              />
+                              <div className="w-9 h-5 bg-stone-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-stone-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600"></div>
+                            </label>
+                            <span className="text-xs font-semibold text-stone-700">
+                              Enable Free Initial Chat
+                            </span>
+                          </div>
+                        </div>
                       </div>
+                    </div>
                   )}
 
                   {/* Role Specific Fields: STUDENT */}

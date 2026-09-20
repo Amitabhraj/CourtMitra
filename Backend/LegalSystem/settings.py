@@ -107,9 +107,11 @@ DATABASES = {
     'default': dj_database_url.parse(
         os.getenv('DATABASE_URL'),
         conn_max_age=600,
-        ssl_require=True,
+        ssl_require=True
     )
 }
+
+DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
 
 # DATABASES = {
 #     "default": {
@@ -157,8 +159,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR
 
 
-RAZORPAY_API_KEY = 'rzp_test_TeAeSeVr6v0F7E'
-RAZORPAY_API_SECRET = 'GtJylDuasLToEC3EWEzSb78U'
+RAZORPAY_KEY_ID = 'rzp_test_TeAeSeVr6v0F7E'
+RAZORPAY_KEY_SECRET = 'GtJylDuasLToEC3EWEzSb78U'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

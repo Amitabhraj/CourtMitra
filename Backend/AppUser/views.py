@@ -31,6 +31,9 @@ class RegisterUserView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
 
+        print(response.data)
+        print(request.data)
+
         user = User.objects.get(username=response.data['username'])
         user.set_password(request.data['password'])
 
@@ -61,22 +64,21 @@ class RegisterUserView(generics.CreateAPIView):
                     defaults={
                         "mobile": request.data.get("phone_number", "0000000000") or request.data.get("mobile", "0000000000"),
                         "experience_years": int(request.data.get("experience_years") or 0),
-                        "start_time": "09:00:00",
-                        "end_time": "18:00:00",
-                        "working_days": "MON,TUE,WED,THU,FRI",
+                        "address": request.data.get("address", "") or request.data.get("city", ""),
+                        "start_time": request.data.get("start_time", "") or "09:00:00",
+                        "end_time": request.data.get("end_time", "") or "18:00:00",
+                        "working_days": str(request.data.get("working_days", "") or "Monday,Tuesday,Wednesday,Thursday,Friday"),
                         "working_place": request.data.get("working_place", "") or request.data.get("city", "High Court / District Court"),
                         "about": request.data.get("about", "") or "Legal advocate practicing across criminal, civil, and corporate litigation.",
                         "consultation_fee": float(request.data.get("consultation_fee") or 500.00),
+                        "chat_free": bool(request.data.get("chat_free") or False),
                     }
                 )
                 spec_val = request.data.get("specialization")
                 if spec_val:
-                    if isinstance(spec_val, int) or (isinstance(spec_val, str) and spec_val.isdigit()):
-                        spec_obj = Specialization.objects.filter(id=int(spec_val)).first()
-                    else:
-                        spec_obj = Specialization.objects.filter(name__iexact=str(spec_val).strip()).first()
-                    if spec_obj:
-                        profile.specialization.add(spec_obj)
+                    for spec in spec_val.split(","):
+                        specialization, _ = Specialization.objects.get_or_create(id=spec.strip())
+                        profile.specialization.add(specialization)
             elif role == "STUDENT":
                 StudentProfile.objects.get_or_create(
                     user=user,

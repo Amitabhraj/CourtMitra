@@ -12,12 +12,27 @@ const WEEK_DAYS = [
 ];
 
 const normalizeWorkingDays = (value) => {
+  if (!value) return [];
+
+  // Case 1: Array format (e.g., ['Monday,Tuesday,Wednesday'] or ['Monday', 'Tuesday'])
   if (Array.isArray(value)) {
-    return value;
+    return value
+      .flatMap((item) => (typeof item === "string" ? item.split(",") : item))
+      .map((day) => (typeof day === "string" ? day.trim() : day))
+      .filter(Boolean);
   }
 
-  if (value && Array.isArray(value.day)) {
-    return value.day;
+  // Case 2: Object with 'day' property (e.g., { day: ['Monday', 'Tuesday'] } or { day: "Monday,Tuesday" })
+  if (typeof value === "object" && value.day) {
+    return normalizeWorkingDays(value.day);
+  }
+
+  // Case 3: Comma-separated string format (e.g., "Monday, Tuesday, Wednesday")
+  if (typeof value === "string") {
+    return value
+      .split(",")
+      .map((day) => day.trim())
+      .filter(Boolean);
   }
 
   return [];
@@ -56,12 +71,33 @@ const LawyerProfilePanel = ({
           `${apiBase}/api/user/get-all-specializations/`,
         );
         const data = await response.json().catch(() => []);
-        const options = Array.isArray(data)
+        const rawOptions = Array.isArray(data)
           ? data
           : Array.isArray(data?.results)
             ? data.results
-            : [];
-        setSpecializationOptions(options);
+            : Array.isArray(data?.specializations)
+              ? data.specializations
+              : [];
+
+        // Normalize options into { id, name } format
+        const formattedOptions = rawOptions.map((item, index) => {
+          if (typeof item === "string") {
+            return { id: item, name: item };
+          }
+          if (Array.isArray(item)) {
+            return { id: item[0], name: item[1] || item[0] };
+          }
+          return {
+            id: item.id || item.value || item.name || index,
+            name:
+              item.name ||
+              item.specialization_name ||
+              item.label ||
+              String(item.id),
+          };
+        });
+
+        setSpecializationOptions(formattedOptions);
       } catch (_error) {
         setSpecializationOptions([]);
       }
@@ -148,7 +184,10 @@ const LawyerProfilePanel = ({
       payload.append("status", form.status || "ACTIVE");
       payload.append("start_time", form.start_time || "00:00:00");
       payload.append("end_time", form.end_time || "00:00:00");
+
+      // Appends working_days as a valid JSON array string
       payload.append("working_days", JSON.stringify(form.working_days));
+
       payload.append("working_place", form.working_place || "");
       payload.append("about", form.about || "");
       payload.append("chat_free", String(form.chat_free));
@@ -357,31 +396,33 @@ const LawyerProfilePanel = ({
           />
         </label>
 
-
         <label className="block sm:col-span-2">
           <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.14em] text-stone-600">
             Chat Free
           </span>
-            <input
-              type="checkbox"
-              checked={form.chat_free}
-              onChange={(event) => updateField("chat_free", event.target.checked)}
-              className="h-4 w-4 rounded border-amber-300 text-amber-600"
-            />
+          <input
+            type="checkbox"
+            checked={form.chat_free}
+            onChange={(event) =>
+              updateField("chat_free", event.target.checked)
+            }
+            className="h-4 w-4 rounded border-amber-300 text-amber-600"
+          />
         </label>
-
 
         <label className="block sm:col-span-2">
           <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.14em] text-stone-600">
             Consultation Fee (in INR , including taxes like GST or corporate Tax)
           </span>
-            <input
-              type="number"
-              value={form.consultation_fee}
-              onChange={(event) => updateField("consultation_fee", event.target.value)}
-              className="w-full rounded-xl border border-amber-200/80 bg-amber-50/70 px-3 py-2.5 text-sm text-stone-400"
-              required
-            />
+          <input
+            type="number"
+            value={form.consultation_fee}
+            onChange={(event) =>
+              updateField("consultation_fee", event.target.value)
+            }
+            className="w-full rounded-xl border border-amber-200/80 bg-amber-50/70 px-3 py-2.5 text-sm text-stone-800"
+            required
+          />
         </label>
 
         <div className="sm:col-span-2">
@@ -394,7 +435,7 @@ const LawyerProfilePanel = ({
                 key={day}
                 type="button"
                 onClick={() => toggleWorkingDay(day)}
-                className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
+                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
                   form.working_days.includes(day)
                     ? "border-amber-300 bg-amber-100 text-amber-900"
                     : "border-amber-200 bg-amber-50 text-stone-700"
@@ -414,13 +455,13 @@ const LawyerProfilePanel = ({
             {specializationOptions.map((item) => (
               <label
                 key={item.id}
-                className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-[#fff8ec] px-3 py-1.5 text-xs font-medium text-stone-700"
+                className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-[#fff8ec] px-3 py-1.5 text-xs font-medium text-stone-700 cursor-pointer"
               >
                 <input
                   type="checkbox"
                   checked={form.specialization.includes(item.id)}
                   onChange={() => toggleSpecialization(item.id)}
-                  className="h-3.5 w-3.5"
+                  className="h-3.5 w-3.5 accent-amber-600"
                 />
                 {item.name}
               </label>
@@ -467,7 +508,7 @@ const LawyerProfilePanel = ({
       <button
         type="submit"
         disabled={isSaving}
-        className="mt-4 inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-amber-400 to-orange-500 px-4 py-2.5 text-sm font-semibold text-amber-50 shadow-[0_10px_22px_rgba(217,119,6,0.25)] disabled:opacity-60"
+        className="mt-4 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 px-4 py-2.5 text-sm font-semibold text-amber-50 shadow-[0_10px_22px_rgba(217,119,6,0.25)] disabled:opacity-60 cursor-pointer"
       >
         <Save size={15} />
         {isSaving

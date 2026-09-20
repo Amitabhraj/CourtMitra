@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Filter, Search, UserRound } from "lucide-react";
+import { Filter, Search, UserRound, X, CreditCard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const normalizeDay = (value) =>
@@ -67,6 +67,16 @@ const FindLawyer = () => {
   const [bookingDrafts, setBookingDrafts] = useState({});
   const [availableSlotsByLawyer, setAvailableSlotsByLawyer] = useState({});
   const [bookingBusyByLawyer, setBookingBusyByLawyer] = useState({});
+
+  // Payment Confirmation Modal State
+  const [paymentModal, setPaymentModal] = useState({
+    isOpen: false,
+    lawyer: null,
+    date: "",
+    timeSlot: "",
+    amount: 0,
+  });
+
   const [filters, setFilters] = useState({
     search: "",
     specialization: "ALL",
@@ -256,13 +266,14 @@ const FindLawyer = () => {
     }
   };
 
-  const bookAppointment = async (lawyerId) => {
+  // Step 1: User clicks "Book Appointment" -> Opens Modal with Fee Details
+  const handleInitiateBooking = (lawyer) => {
     if (!accessToken) {
       navigate("/login");
       return;
     }
 
-    const draft = bookingDrafts[lawyerId] || { date: "", time_slot: "" };
+    const draft = bookingDrafts[lawyer.id] || { date: "", time_slot: "" };
 
     if (!draft.date || !draft.time_slot) {
       setError("Please select a date and available time slot before booking.");
@@ -271,48 +282,121 @@ const FindLawyer = () => {
 
     setError("");
     setFeedback("");
+
+    setPaymentModal({
+      isOpen: true,
+      lawyer: lawyer,
+      date: draft.date,
+      timeSlot: draft.time_slot,
+      amount: Number(lawyer?.consultation_fee || 0),
+    });
+  };
+
+  // Step 2: User clicks "Proceed Now !!!" in Modal -> Calls Backend and Opens Razorpay
+  const handleProceedPayment = async () => {
+    const { lawyer, date, timeSlot } = paymentModal;
+    const lawyerId = lawyer.id;
+
+    setPaymentModal((prev) => ({ ...prev, isOpen: false }));
     setBookingBusyByLawyer((current) => ({ ...current, [lawyerId]: true }));
 
     try {
-      const response = await fetch(
-        `${apiBase}/api/client/create-appointment/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({
-            lawyer: Number(lawyerId),
-            date: draft.date,
-            time_slot: draft.time_slot,
-          }),
+      // Create Razorpay order from backend
+      const response = await fetch(`${apiBase}/api/consultant/create-payment-order/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
         },
-      );
+        body: JSON.stringify({
+          lawyer: Number(lawyerId),
+          date: date,
+          time_slot: timeSlot,
+        }),
+      });
 
-      const data = await response.json().catch(() => ({}));
+      const orderData = await response.json();
 
       if (!response.ok) {
-        const detail =
-          typeof data?.detail === "string"
-            ? data.detail
-            : Array.isArray(data?.non_field_errors)
-              ? data.non_field_errors[0]
-              : "Unable to book appointment.";
-        throw new Error(detail);
+        throw new Error(orderData?.detail || "Failed to initialize payment.");
       }
 
-      setFeedback("Appointment booked successfully.");
+      // If consultation is free, bypass Razorpay flow
+      if (orderData.free_appointment) {
+        await completeBookingVerification(lawyerId, { is_free: true });
+        return;
+      }
+
+      // Open Razorpay Modal
+      const options = {
+        key: orderData.key_id,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "Legal Consultation",
+        description: `Booking with ${lawyer?.user?.username || "Lawyer"}`,
+        order_id: orderData.order_id,
+        handler: async function (paymentResponse) {
+          // Verify payment on backend upon success
+          await completeBookingVerification(lawyerId, {
+            lawyer: Number(lawyerId),
+            date: date,
+            time_slot: timeSlot,
+            razorpay_order_id: paymentResponse.razorpay_order_id,
+            razorpay_payment_id: paymentResponse.razorpay_payment_id,
+            razorpay_signature: paymentResponse.razorpay_signature,
+            is_free: false,
+          });
+        },
+        modal: {
+          ondismiss: function () {
+            setBookingBusyByLawyer((current) => ({ ...current, [lawyerId]: false }));
+            setError("Payment was cancelled by the user.");
+          },
+        },
+        theme: {
+          color: "#f59e0b",
+        },
+      };
+
+      if (window.Razorpay) {
+        const razorpayInstance = new window.Razorpay(options);
+        razorpayInstance.open();
+      } else {
+        throw new Error("Razorpay SDK not loaded. Please refresh the page.");
+      }
+    } catch (paymentErr) {
+      setError(
+        paymentErr instanceof Error
+          ? paymentErr.message
+          : "Unable to process payment.",
+      );
+      setBookingBusyByLawyer((current) => ({ ...current, [lawyerId]: false }));
+    }
+  };
+
+  // Step 3: Complete appointment booking on backend
+  const completeBookingVerification = async (lawyerId, payload) => {
+    try {
+      const response = await fetch(`${apiBase}/api/consultant/verify-payment-and-book/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data?.detail || "Unable to confirm appointment booking.");
+      }
+
+      setFeedback("Appointment booked and payment received successfully!");
       setBookingField(lawyerId, "time_slot", "");
       await fetchAvailableSlots(lawyerId);
-    } catch (bookError) {
-      setError(
-        bookError instanceof Error
-          ? bookError.message
-          : "Unable to book appointment.",
-      );
-
-      // Keep the UI in sync if someone else booked the slot first.
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Booking confirmation failed.");
       await fetchAvailableSlots(lawyerId);
     } finally {
       setBookingBusyByLawyer((current) => ({ ...current, [lawyerId]: false }));
@@ -545,17 +629,17 @@ const FindLawyer = () => {
                     </p>
 
                     <p>
-                    <span className="font-semibold text-stone-700">
-                      Consultation Fee:
-                    </span>{" "}
-                    {Number(lawyer?.consultation_fee) === 0 ? (
-                      <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700">
-                        FREE
-                      </span>
-                    ) : (
-                      <>₹{lawyer?.consultation_fee}</>
-                    )}
-                  </p>
+                      <span className="font-semibold text-stone-700">
+                        Consultation Fee:
+                      </span>{" "}
+                      {Number(lawyer?.consultation_fee) === 0 ? (
+                        <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700">
+                          FREE
+                        </span>
+                      ) : (
+                        <>₹{lawyer?.consultation_fee}</>
+                      )}
+                    </p>
                   </div>
 
                   <div className="mt-3 flex flex-wrap gap-1.5">
@@ -632,12 +716,12 @@ const FindLawyer = () => {
 
                     <button
                       type="button"
-                      onClick={() => bookAppointment(lawyer.id)}
+                      onClick={() => handleInitiateBooking(lawyer)}
                       disabled={Boolean(bookingBusyByLawyer[lawyer.id])}
-                      className="mt-2 w-full rounded-lg bg-linear-to-r from-amber-400 to-orange-500 px-3 py-2 text-xs font-semibold text-amber-50 disabled:opacity-60"
+                      className="mt-2 w-full rounded-lg bg-gradient-to-r from-amber-400 to-orange-500 px-3 py-2 text-xs font-semibold text-amber-50 disabled:opacity-60"
                     >
                       {bookingBusyByLawyer[lawyer.id]
-                        ? "Booking..."
+                        ? "Processing..."
                         : "Book Appointment"}
                     </button>
                   </div>
@@ -647,6 +731,75 @@ const FindLawyer = () => {
           </div>
         </section>
       </section>
+
+      {/* Payment Summary Popup Modal */}
+      {paymentModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 p-4 backdrop-blur-sm">
+          <div className="relative w-full max-w-md rounded-3xl border border-amber-200 bg-[#fff8ec] p-6 shadow-2xl">
+            <button
+              onClick={() => setPaymentModal((prev) => ({ ...prev, isOpen: false }))}
+              className="absolute right-4 top-4 text-stone-400 hover:text-stone-600"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="grid h-10 w-10 place-items-center rounded-xl bg-amber-100 text-amber-700">
+                <CreditCard size={20} />
+              </div>
+              <h3 className="text-xl font-black text-stone-900">Confirm Payment</h3>
+            </div>
+
+            <p className="mt-3 text-sm text-stone-600">
+              You are booking a consultation with{" "}
+              <strong className="text-stone-900">
+                {paymentModal.lawyer?.user?.username || `Lawyer #${paymentModal.lawyer?.id}`}
+              </strong>.
+            </p>
+
+            <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 text-xs text-stone-700 space-y-2">
+              <div className="flex justify-between">
+                <span>Date:</span>
+                <span className="font-semibold text-stone-900">{paymentModal.date}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Time Slot:</span>
+                <span className="font-semibold text-stone-900">{paymentModal.timeSlot}</span>
+              </div>
+              <hr className="border-amber-200/80 my-1" />
+              <div className="flex justify-between text-sm font-bold text-stone-900">
+                <span>Total Fee:</span>
+                <span className="text-amber-800">
+                  {paymentModal.amount === 0 ? "FREE" : `₹${paymentModal.amount}`}
+                </span>
+              </div>
+            </div>
+
+            <p className="mt-3 text-xs text-stone-500">
+              {paymentModal.amount === 0
+                ? "This consultation is free of charge."
+                : `You need to pay ₹${paymentModal.amount} as decided by the lawyer to complete this booking.`}
+            </p>
+
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setPaymentModal((prev) => ({ ...prev, isOpen: false }))}
+                className="w-1/2 rounded-xl border border-stone-300 bg-white py-2.5 text-xs font-semibold text-stone-700 hover:bg-stone-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleProceedPayment}
+                className="w-1/2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 py-2.5 text-xs font-bold text-white shadow-md hover:from-amber-600 hover:to-orange-600"
+              >
+                Proceed Now !!!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

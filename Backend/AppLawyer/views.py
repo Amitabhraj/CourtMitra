@@ -48,6 +48,7 @@ class UpdateLawyerProfile(generics.UpdateAPIView):
         return LawyerProfile.objects.filter(user=self.request.user)
 
     def put(self, request, *args, **kwargs):
+        print("PUT request data:", request.data)
         kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
 
