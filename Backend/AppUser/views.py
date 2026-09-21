@@ -86,6 +86,7 @@ class RegisterUserView(generics.CreateAPIView):
                         "college_name": request.data.get("college_name", "") or "Law School / Faculty of Law",
                         "course": request.data.get("course", "") or "LL.B",
                         "year": int(request.data.get("year") or 1),
+                        "mobile_number": request.data.get("phone_number", "0000000000") or request.data.get("mobile", "0000000000"),
                         "skills": request.data.get("skills", "") or "Legal research, case analysis, document drafting",
                     }
                 )

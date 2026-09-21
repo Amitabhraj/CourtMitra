@@ -59,7 +59,7 @@ const LawyerDashboard = () => {
       const [userRes, appointmentsRes, internshipsRes, applicationsRes] =
         await Promise.all([
           authFetch("/api/user/user-detail/"),
-          authFetch("/api/client/lawyer-appointments/"),
+          authFetch("/api/consultant/lawyer-appointments/"),
           authFetch("/api/law/internships/"),
           authFetch("/api/law/lawyer/applications/"),
         ]);
@@ -126,7 +126,7 @@ const LawyerDashboard = () => {
 
     try {
       const response = await authFetch(
-        `/api/client/update-status/${appointmentId}/`,
+        `/api/consultant/update-status/${appointmentId}/`,
         {
           method: "PUT",
           headers: {
@@ -325,6 +325,7 @@ const LawyerDashboard = () => {
                       className="rounded-lg border border-amber-200 bg-white px-2 py-1 text-xs"
                     >
                       <option value="SCHEDULED">SCHEDULED</option>
+                      <option value="ON GOING">ON GOING</option>
                       <option value="COMPLETED">COMPLETED</option>
                       <option value="CANCELLED">CANCELLED</option>
                     </select>

@@ -7,7 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from AppLawyer.models import LawyerProfile  # Adjust imports to match your models
-from AppClient.models import Appointment  # Adjust imports to match your models
+from AppClient.models import ClientProfile
+from AppConsultant.models import Appointment  # Adjust imports to match your models
 
 # Initialize Razorpay Client
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
@@ -64,6 +65,7 @@ def create_payment_order(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def verify_payment_and_book(request):
+    print("Request Data:", request.data)
     lawyer_id = request.data.get('lawyer')
     date = request.data.get('date')
     time_slot = request.data.get('time_slot')
@@ -95,7 +97,7 @@ def verify_payment_and_book(request):
             return Response({'detail': 'This slot has already been booked.'}, status=status.HTTP_400_BAD_REQUEST)
 
         appointment = Appointment.objects.create(
-            client=request.user,
+            client=ClientProfile.objects.get(user=request.user),
             lawyer=lawyer,
             date=date,
             time_slot=time_slot,
@@ -111,5 +113,3 @@ def verify_payment_and_book(request):
 
     except LawyerProfile.DoesNotExist:
         return Response({'detail': 'Lawyer profile not found.'}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)

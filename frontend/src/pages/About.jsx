@@ -401,7 +401,7 @@ const About = () => {
             </div>
           </div>
 
-          <figure className="mt-8 overflow-hidden rounded-3xl border border-amber-200/80 bg-white shadow-[0_16px_36px_rgba(120,53,15,0.12)]">
+          {/* <figure className="mt-8 overflow-hidden rounded-3xl border border-amber-200/80 bg-white shadow-[0_16px_36px_rgba(120,53,15,0.12)]">
             <div className="aspect-video w-full max-h-[520px] overflow-hidden bg-stone-100">
               <img
                 src="/team.png"
@@ -413,7 +413,7 @@ const About = () => {
             <figcaption className="border-t border-amber-200/60 bg-[#fffbf5] px-6 py-4 text-center text-xs text-stone-600 sm:text-sm">
               The CourtMitra Engineering & Design Team — Driven by the mission to make legal access transparent and equitable.
             </figcaption>
-          </figure>
+          </figure> */}
         </section>
 
         {/* Bottom Call to Action */}

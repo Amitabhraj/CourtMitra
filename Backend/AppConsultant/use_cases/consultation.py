@@ -1,15 +1,13 @@
 from rest_framework import generics, permissions
-from AppClient.models import Appointment
+from AppConsultant.models import Appointment
 from django.db import IntegrityError, transaction
-from AppClient.use_cases.appointment.appointment_serializer import (
+from AppConsultant.use_cases.consultation_serializer import (
     AppointmentSerializer,
     AppointmentStatusSerializer,
     AppointmentUpdateSerializer,
 )
 from AppClient.models import ClientProfile
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from AppLawyer.models import LawyerProfile
 from rest_framework.exceptions import ValidationError
 
@@ -65,27 +63,6 @@ class LawyerAppointmentListView(generics.ListAPIView):
             return Appointment.objects.filter(lawyer=lawyer)
         except LawyerProfile.DoesNotExist:
             return Appointment.objects.none()
-    
-
-
-
-
-class AvailableSlotsView(APIView):
-    permission_classes = [permissions.AllowAny]
-
-    def get(self, request, lawyer_id, date):
-        all_slots = [slot[0] for slot in Appointment.TIME_SLOTS]
-
-        booked_slots = Appointment.objects.filter(
-            lawyer_id=lawyer_id,
-            date=date
-        ).values_list('time_slot', flat=True)
-
-        available_slots = [slot for slot in all_slots if slot not in booked_slots]
-
-        return Response({
-            "available_slots": available_slots
-        })
     
 
 

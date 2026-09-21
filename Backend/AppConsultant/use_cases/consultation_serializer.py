@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from AppClient.models import Appointment
+from AppConsultant.models import Appointment
 
 class AppointmentSerializer(serializers.ModelSerializer):
 

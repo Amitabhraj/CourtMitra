@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'AppStudent',
     'AppUser',
     'AppClient',
+    'AppConsultant',
     'corsheaders', 
     'rest_framework'
 ]
@@ -106,7 +107,7 @@ WSGI_APPLICATION = 'LegalSystem.wsgi.application'
 DATABASES = {
     'default': dj_database_url.parse(
         os.getenv('DATABASE_URL'),
-        conn_max_age=600,
+        conn_max_age=0,
         ssl_require=True
     )
 }
